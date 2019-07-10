@@ -112,7 +112,7 @@
     };
 
     var refresh_table = function() {
-        if ( $('#toggle-{{ state_name }}-refresh').prop('data-value') == 0 ) {
+        if ( !$('#toggle-{{ state_name }}-refresh').hasClass('btn-info') ) {
           $("#alert-default").find('span').html("Refresh paused for {{ state_name }} jobs.");
           $("#alert-default").show();
           return;
@@ -141,10 +141,6 @@
     });
 
     $('#toggle-{{ state_name }}-refresh').click(function() {
-      var value = $(this).prop('data-value') == "1" ? "0" : "1";
-      var btnText = value == "0" ? "On" : "Off";
-      $(this).prop('data-value', value);
-      $(this).find('span').html(btnText);
       $(this).toggleClass('btn-info')
     });
 
