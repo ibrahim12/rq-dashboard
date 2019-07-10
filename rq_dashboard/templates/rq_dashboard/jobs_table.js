@@ -112,6 +112,15 @@
     };
 
     var refresh_table = function() {
+        if ( $('#toggle-{{ state_name }}-refresh').prop('data-value') == 0 ) {
+          $("#alert-default").find('span').html("Refresh paused for {{ state_name }} jobs.");
+          $("#alert-default").show();
+          return;
+        } else {
+          $("#alert-default").find('span').html("");
+          $("#alert-default").hide();
+        }
+
         if (window.getSelection().toString()) {
             $('#alert-fixed').show();
             return;
@@ -129,6 +138,14 @@
         $('#refresh-button').click(refresh_table);
         setInterval(refresh_table, POLL_INTERVAL);
 
+    });
+
+    $('#toggle-{{ state_name }}-refresh').click(function() {
+      var value = $(this).prop('data-value') == "1" ? "0" : "1";
+      var btnText = value == "0" ? "On" : "Off";
+      $(this).prop('data-value', value);
+      $(this).find('span').html(btnText);
+      $(this).toggleClass('btn-info')
     });
 
     // Enable the AJAX behaviour of the cancel button

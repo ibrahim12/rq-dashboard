@@ -124,7 +124,7 @@ span.loading {
     color: #555;
 }
 
-#alert-fixed {
+#alert-fixed, #alert-default {
     position: fixed;
     top: 20px;
     left: 20px;
