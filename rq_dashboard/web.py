@@ -223,6 +223,13 @@ def cancel_job_view(job_id):
     return dict(status='OK')
 
 
+@blueprint.route('/job/<job_id>/delete', methods=['POST'])
+@jsonify
+def delete_job_view(job_id):
+    Job.fetch(job_id).delete()
+    return dict(status='OK')
+
+
 @blueprint.route('/job/<job_id>/requeue', methods=['POST'])
 @blueprint.route('/job/<job_id>/<state>/requeue', methods=['POST'])
 @jsonify

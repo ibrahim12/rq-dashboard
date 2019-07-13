@@ -163,6 +163,25 @@
         return false;
     });
 
+    // Enable the AJAX behaviour of the delete button
+    $tbody.on('click', '[data-role=delete-{{ state_name }}-job-btn]', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $this = $(this),
+            $row = $this.parents('tr'),
+            job_id = $row.data('job-id'),
+            url = url_for('delete_job', job_id);
+
+        modalConfirm('delete job', function() {
+            $.post(url, function(data) {
+                $row.fadeOut('fast', function() { $row.remove(); });
+            });
+        });
+
+        return false;
+    });
+
     $('#cancel-all-{{ state_name }}-job-btn').click(function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -226,8 +245,7 @@
         var $this = $(this),
             $row = $this.parents('tr'),
             job_id = $row.data('job-id'),
-            route_name = "{{ state_name }}" == 'finished' ? 'requeue_finished_job' : 'requeue_job',
-            url = url_for(route_name, job_id);
+            url = url_for('requeue_job', job_id);
 
         $.post(url, function(data) {
             $row.fadeOut('fast', function() { $row.remove(); });

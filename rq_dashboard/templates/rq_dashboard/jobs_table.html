@@ -1,27 +1,27 @@
 {% macro render_html(queue_name, state_name, newest_top) -%}
 
-<div class="row" id="{{ state_name }}-jobs-table">
+<div class="row jobs-table" id="{{ state_name }}-jobs-table">
     <div class="span12">
       <div class="section">
-            <h1>{% if queue_name != 'failed' %}{{ state_name }}{% endif %} jobs on 
+            <h1>{% if queue_name != 'failed' %}{{ state_name }}{% endif %} jobs on
               <strong>{{ queue_name }} <span class="job-count"></span></strong>
             </h1>
             <p class="intro">
-                  <a href="javascript:void(0)" 
-                         class="btn btn-small btn-info" id="toggle-{{ state_name }}-refresh" 
+                  <a href="javascript:void(0)"
+                         class="btn btn-small btn-info" id="toggle-{{ state_name }}-refresh"
                          style="float: right; margin-left: 8px;" ><i class="icon-refresh"></i>  <span>Refresh</span>
                   </a>
                   &nbsp;
                   {% if state_name == 'finished' %}
-                  <a href="{{ url_for('rq_dashboard.delete_all_job_view', queue_name=queue_name, state='finished') }}" id="empty-finished-jobs-btn" 
+                  <a href="{{ url_for('rq_dashboard.delete_all_job_view', queue_name=queue_name, state='finished') }}" id="empty-finished-jobs-btn"
                          class="btn btn-danger btn-small" style="float: right" data-toggle="tooltip"
                          title="Remove all finished jobs (<b>destructive</b>)" data-html=true><i
                          class="icon-trash icon-white"></i> Empty</a>
                   {% elif state_name == 'running' %}
-                  <a href="{{ url_for('rq_dashboard.cancel_all_job_view', queue_name=queue_name, state='running') }}" 
+                  <a href="{{ url_for('rq_dashboard.cancel_all_job_view', queue_name=queue_name, state='running') }}"
                            id="cancel-all-running-job-btn"
                            class="btn btn-danger btn-small" style="float: right" data-toggle="tooltip"
-                           title="Cancel all running jobs from this queue (<b>destructive</b>)" 
+                           title="Cancel all running jobs from this queue (<b>destructive</b>)"
                            data-html=true><i class="icon-trash icon-white"></i> Cancel ALL</a>
                   {% elif state_name == 'pending' %}
                   <a href="{{ url_for('rq_dashboard.empty_queue', queue_name=queue_name) }}" id="empty-pending-jobs-btn"
@@ -73,11 +73,15 @@
                     </td>
                     <td><span class="creation_date"><%= d.created_at %></span></td>
                     <td class="actions narrow">
-                        {% if state_name != 'running' %}
-                          <a href="#" data-role="requeue-{{ state_name }}-job-btn" 
+                        {% if queue_name == 'failed' %}
+                          <a href="#" data-role="requeue-{{ state_name }}-job-btn"
                               class="btn btn-small"><i class="icon-retweet"></i>Requeue</a>
                         {% endif %}
-                        <a href="#" data-role="cancel-{{ state_name }}-job-btn" class="btn btn-small"><i class="icon-remove"></i> Cancel</a>
+                        {% if state_name == 'finished' %}
+                          <a href="#" data-role="delete-{{ state_name }}-job-btn" class="btn btn-small"><i class="icon-remove"></i> Delete</a>
+                        {% else %}
+                          <a href="#" data-role="cancel-{{ state_name }}-job-btn" class="btn btn-small"><i class="icon-remove"></i> Cancel</a>
+                        {% endif %}
                     </td>
                 </tr>
             </script>

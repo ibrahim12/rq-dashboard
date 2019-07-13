@@ -5,8 +5,8 @@ var url_for = function(name, param) {
     else if (name == 'queues') { url += 'queues.json'; }
     else if (name == 'workers') { url += 'workers.json'; }
     else if (name == 'cancel_job') { url += 'job/' + encodeURIComponent(param) + '/cancel'; }
+    else if (name == 'delete_job') { url += 'job/' + encodeURIComponent(param) + '/delete'; }
     else if (name == 'requeue_job') { url += 'job/' + encodeURIComponent(param) + '/requeue'; }
-    else if (name == 'requeue_finished_job') { url += 'job/' + encodeURIComponent(param) +  '/finished/requeue'; }
     return url;
 };
 
