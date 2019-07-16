@@ -152,8 +152,8 @@ def serialize_date(dt):
     return arrow.get(dt).to('UTC').datetime.isoformat()
 
 
-def serialize_job(job):
-    return dict(
+def serialize_job(job, validate_result_serializable=False):
+    data = dict(
         id=job.id,
         created_at=serialize_date(job.created_at),
         enqueued_at=serialize_date(job.enqueued_at),
@@ -161,7 +161,17 @@ def serialize_job(job):
         origin=job.origin,
         result=job._result,
         exc_info=str(job.exc_info) if job.exc_info else None,
-        description=job.description)
+        description=job.description
+    )
+
+    if validate_result_serializable:
+        try:
+            from flask import jsonify as flask_jsonify
+            flask_jsonify(job._result)
+        except:
+            data['result'] = 'Data is not json serializable.'
+
+    return data
 
 
 def remove_none_values(input_dict):
@@ -385,7 +395,7 @@ def list_jobs(queue_name, state='pending', page=1):
     else:
         queue_jobs = []
 
-    jobs = [serialize_job(job) for job in queue_jobs if job]
+    jobs = [serialize_job(job, validate_result_serializable=True if state == 'finished' else False) for job in queue_jobs if job]
 
     if reverse_order:
         jobs = sorted(jobs, key=lambda x: x['created_at'], reverse=True)
