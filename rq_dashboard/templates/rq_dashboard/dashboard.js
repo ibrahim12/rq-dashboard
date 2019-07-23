@@ -18,6 +18,13 @@ var url_for_jobs = function(param, state, page) {
     return url;
 };
 
+var url_for_failed_jobs = function(param, page) {
+    var url = {{ rq_url_prefix|tojson|safe }} + 'jobs/'
+                      + encodeURIComponent(param) + '/'
+                      + page + '.json';
+    return url;
+};
+
 var toRelative = function(universal_date_string) {
     var tzo = new Date().getTimezoneOffset();
     var d = Date.create(universal_date_string).rewind({ minutes: tzo });
@@ -41,7 +48,14 @@ var api = {
     },
 
     getJobs: function(queue_name, state, page, cb) {
-        $.getJSON(url_for_jobs(queue_name, state, page), function(data) {
+        var url;
+        if (queue_name == 'failed') {
+            url = url_for_failed_jobs(queue_name, page);
+        } else {
+            url = url_for_jobs(queue_name, state, page);
+        }
+
+        $.getJSON(url, function(data) {
             var jobs = data.jobs;
             var pagination = data.pagination;
             var total_jobs = data.total_jobs;
@@ -234,7 +248,11 @@ var modalConfirm = function(action, cb) {
 
 {% import 'rq_dashboard/jobs_table.js' as job_table %}
 
-{{ job_table.render_js(queue.name, 'pending', page if (state == 'pending' or queue_name == 'failed') else 1)  }}
+{% if queue.name != 'failed' %}
+    {{ job_table.render_js(queue.name, 'pending', page if (state == 'pending') else 1)  }}
+{% else %}
+    {{ job_table.render_js(queue.name, 'pending', page)  }}
+{% endif %}
 
 {% if queue.name != 'failed' %}
     {{ job_table.render_js(queue.name, 'running', page if state == 'running' else 1) }}
