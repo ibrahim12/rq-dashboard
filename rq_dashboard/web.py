@@ -28,6 +28,7 @@ from redis import Redis, from_url
 from redis.sentinel import Sentinel
 from rq import (Queue, Worker, cancel_job, pop_connection,
                 push_connection, requeue_job)
+from rq.exceptions import NoSuchJobError
 from rq.job import Job
 from rq.registry import FinishedJobRegistry, StartedJobRegistry
 from .legacy_config import upgrade_config
@@ -419,6 +420,14 @@ def serialize_current_job(job):
     )
 
 
+def get_worker_current_job(worker):
+    try:
+        job = worker.get_current_job()
+    except NoSuchJobError:
+        job = None
+    return job
+
+
 @blueprint.route('/workers.json')
 @jsonify
 def list_workers():
@@ -431,7 +440,7 @@ def list_workers():
             queues=serialize_queue_names(worker),
             state=str(worker.get_state()),
             current_job=serialize_current_job(
-                worker.get_current_job()),
+                get_worker_current_job(worker)),
         )
         for worker in Worker.all()),
         key=lambda w: (w['state'], w['name']))
