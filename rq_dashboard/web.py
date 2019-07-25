@@ -16,6 +16,7 @@ As a quick-and-dirty convenience, the command line invocation in ``cli.py``
 provides the option to require HTTP Basic Auth in a few lines of code.
 
 """
+import logging
 import re
 from functools import wraps
 from math import ceil
@@ -424,6 +425,7 @@ def get_worker_current_job(worker):
     try:
         job = worker.get_current_job()
     except NoSuchJobError:
+        logging.warning('Current job on worker `{}` not found.'.format(worker.name))
         job = None
     return job
 
